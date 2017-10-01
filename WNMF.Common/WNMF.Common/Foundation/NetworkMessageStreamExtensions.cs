@@ -16,7 +16,9 @@ namespace WNMF.Common.Foundation {
         ///     Name for a memory block not guaranteed to be zeroed at any given moment
         /// </summary>
         private const string BlockKeyName = "64K";
-
+        /// <summary>
+        /// The flyweight is used to make sure we avoid always allocated buffers
+        /// </summary>
         public static readonly FlyWeight<byte[]> BlockBufferFlyWeight = new FlyWeight<byte[]>();
 
         public static void ChunkTo(this INetworkMessageStream input, Stream dst, string blockKey = BlockKeyName) {
@@ -26,10 +28,9 @@ namespace WNMF.Common.Foundation {
             using (input.BeginReadScope()) {
                 // trying to have overlapping read/writes
                 while (input.ReadTo(block, 0, block.Length, out var fillAmount)) {
-                    worker?.Wait();
+                    FinishLastOperation(worker);
                     var original = block;
-                    if (worker?.Exception != null)
-                        throw new Exception((string) LocalizationKeys.ForGeneralPurposes.SendFailed, worker.Exception);
+
 
                     worker = dst.WriteAsync(original, 0, fillAmount)
                         .ContinueWith(c => {
@@ -38,10 +39,16 @@ namespace WNMF.Common.Foundation {
                         });
                     block = BlockBufferFlyWeight.GetOrCreate(blockKey, k => new byte[1000 * 64]);
                 }
-               
+
                 // make write operation is complete
-                worker?.Wait();
+                FinishLastOperation(worker);
             }
+        }
+
+        private static void FinishLastOperation(Task worker) {
+            worker?.Wait();
+            if (worker?.Exception != null)
+                throw new Exception((string) LocalizationKeys.ForGeneralPurposes.SendFailed, worker.Exception);
         }
     }
 }
