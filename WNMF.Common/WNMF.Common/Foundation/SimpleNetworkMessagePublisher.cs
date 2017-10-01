@@ -12,13 +12,13 @@ using WNMF.Common.Culture;
 using WNMF.Common.Definition;
 
 namespace WNMF.Common.Foundation {
-    public class SimpleNetworkMessageDistributor : NServiceProvider, ISimpleNetworkMessageDistributor {
+    public class SimpleNetworkMessagePublisher : NServiceProvider, ISimpleNetworkMessagePublisher {
         private readonly INetworkEndpointsManager _endpoints;
         private readonly INetworkMessageHandler _handler;
         private readonly INetworkMessageHistory _historyLog;
 
 
-        public SimpleNetworkMessageDistributor(
+        public SimpleNetworkMessagePublisher(
             string name,
             INetworkEndpointsManager endpoints,
             INetworkMessageHandler handler,

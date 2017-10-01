@@ -6,10 +6,14 @@
  * ************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WNMF.Common.Definition;
 using WNMF.Common.Foundation;
+using WNMF.Common.MicroService;
 using WNMF.Common.Protcols.File;
 
 namespace WNMF.Test
@@ -20,7 +24,7 @@ namespace WNMF.Test
         private SimpleRamHistory _history;
         private NetworkEndpointsManager _endpoints;
         private FileBasedNetworkMessageHandler _handler;
-        private SimpleNetworkMessageDistributor _distro;
+        private SimpleNetworkMessagePublisher _distro;
         private DirectoryInfo _dropDir;
         private DirectoryInfo _output;
         private DirectoryInfo _input;
@@ -37,7 +41,7 @@ namespace WNMF.Test
             _endpoints.TryAddEndPoint(
                 new FileEndPoint(new Uri(_output.FullName)), out _);
             _handler = new FileBasedNetworkMessageHandler(null, _dropDir.FullName);
-            _distro = new SimpleNetworkMessageDistributor("test",_endpoints, _handler, _history);
+            _distro = new SimpleNetworkMessagePublisher("test",_endpoints, _handler, _history);
         }
 
         [TestMethod]
@@ -53,15 +57,38 @@ namespace WNMF.Test
         }
 
         [TestMethod]
+        public void DemoMicroService() {
+            using (var micro = new MicroServiceBase(_distro)) {
+
+                var startCount = _output.EnumerateFiles().Count()/2;
+                var timer=new Stopwatch();
+                timer.Start();
+                micro.Publish(CreateStream());
+                micro.Publish(CreateStream());
+                micro.Publish(CreateStream());
+                micro.Publish(CreateStream());
+                micro.Publish(CreateStream());
+                int currentCount;
+                do {
+                     currentCount = _output.EnumerateFiles().Count()/2;
+                    Console.WriteLine("{0} = {1}", timer.Elapsed, currentCount);
+                    if(timer.Elapsed.TotalSeconds>5)
+                        Assert.Fail();
+                    Thread.Sleep(10);
+                } while ((currentCount-5)<startCount);
+                timer.Stop();
+
+            }
+        }
+
+        [TestMethod]
         public void CanMoveFIles() {
             StageTestFile();
             StageTestFile();
             StageTestFile();
             StageTestFile();
             StageTestFile();
-
-
-            var successRatio =_distro.Pump(out var results);
+            var successRatio = _distro.Pump(out var results);
             Console.WriteLine("DIR={0}", _output.Parent);
             Console.WriteLine("OUTDIR={0}", _output);
 
@@ -81,16 +108,21 @@ namespace WNMF.Test
         }
 
         private void StageTestFile() {
-            var inputFile = CreateTestInputFIle(out var originalDescription);
-
-            var stagingSuccess = _distro.Stage(new SimpleThreadLocalStream(
-                    (d) => File.OpenRead(inputFile),
-                    originalDescription
-                ),
+            var stream = CreateStream();
+            var stagingSuccess = _distro.Stage(stream,
                 out var stageRsults);
 
             ReportResults(stageRsults);
             Assert.IsTrue(stagingSuccess);
+        }
+
+        private SimpleThreadLocalStream CreateStream() {
+            var inputFile = CreateTestInputFIle(out var originalDescription);
+            var stream = new SimpleThreadLocalStream(
+                (d) => File.OpenRead(inputFile),
+                originalDescription
+            );
+            return stream;
         }
 
         private string CreateTestInputFIle(out NetworkMessageDescription originalDescription) {

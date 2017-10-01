@@ -7,7 +7,7 @@
 using System.Collections.Generic;
 
 namespace WNMF.Common.Definition {
-    public interface ISimpleNetworkMessageDistributor : INServiceProvider {
+    public interface ISimpleNetworkMessagePublisher : INServiceProvider {
         /// <summary>
         /// Gets the name of the this distributor agent
         /// </summary>
