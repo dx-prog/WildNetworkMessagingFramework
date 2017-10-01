@@ -37,7 +37,7 @@ namespace WNMF.Test
             _endpoints.TryAddEndPoint(
                 new FileEndPoint(new Uri(_output.FullName)), out _);
             _handler = new FileBasedNetworkMessageHandler(null, _dropDir.FullName);
-            _distro = new SimpleNetworkMessageDistributor(_endpoints, _handler, _history);
+            _distro = new SimpleNetworkMessageDistributor("test",_endpoints, _handler, _history);
         }
 
         [TestMethod]
@@ -69,6 +69,15 @@ namespace WNMF.Test
             ReportResults(results);
 
             Assert.AreEqual(1.0,successRatio);
+
+            successRatio = _distro.Pump(out results);
+            Console.WriteLine("DIR={0}", _output.Parent);
+            Console.WriteLine("OUTDIR={0}", _output);
+
+            Console.WriteLine("SR={0}", successRatio);
+            ReportResults(results);
+
+            Assert.AreEqual(double.NaN, successRatio);
         }
 
         private void StageTestFile() {

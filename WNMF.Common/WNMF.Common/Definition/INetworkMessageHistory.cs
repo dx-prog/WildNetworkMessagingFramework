@@ -11,19 +11,21 @@ namespace WNMF.Common.Definition {
         /// <summary>
         /// Mark a message as being sent for a particular endpoint
         /// </summary>
+        /// <param name="distroAgentId"></param>
         /// <param name="endpoint"></param>
         /// <param name="messageDescription"></param>
         /// <param name="reason">data is true if the message is marked</param>
         /// <returns>false if there is was a critical failure</returns>
-        bool TryMarkAsSent(INetworkEndpoint endpoint,NetworkMessageDescription messageDescription, out TryOperationResponse<bool> reason);
+        bool TryMarkAsSent(string distroAgentId, INetworkEndpoint endpoint,NetworkMessageDescription messageDescription, out TryOperationResponse<bool> reason);
         /// <summary>
         /// Check if an endpoint had previously sent a message
         /// </summary>
+        /// <param name="distroAgentId"></param>
         /// <param name="endpoint"></param>
         /// <param name="messageDescription"></param>
         /// <param name="reason">data is same as returned value</param>
         /// <returns></returns>
-        bool TryCheckIfSent(INetworkEndpoint endpoint, NetworkMessageDescription messageDescription, out TryOperationResponse<bool> reason);
+        bool TryCheckIfSent(string distroAgentId, INetworkEndpoint endpoint, NetworkMessageDescription messageDescription, out TryOperationResponse<bool> reason);
 
         /// <summary>
         /// Begin whatever transaction or syncronization operation required

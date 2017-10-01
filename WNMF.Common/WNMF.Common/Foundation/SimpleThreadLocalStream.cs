@@ -4,6 +4,7 @@
  *       2) See License file (https://raw.githubusercontent.com/dx-prog/WildNetworkMessagingFramework/master/LICENSE) for more details 
  *       3) Copyright (c) 2017 David Garcia
  * ************************************************************/
+
 using System;
 using System.IO;
 using System.Threading;
@@ -11,22 +12,23 @@ using WNMF.Common.Definition;
 
 namespace WNMF.Common.Foundation {
     /// <summary>
-    /// This class will isolate ReadTo operations per thread
+    ///     This class will isolate ReadTo operations per thread
     /// </summary>
     public class SimpleThreadLocalStream : INetworkMessageStream {
         private readonly Func<NetworkMessageDescription, Stream> _open;
-        private readonly ThreadLocal<Stream> _stream=new ThreadLocal<Stream>();
-        public SimpleThreadLocalStream(Func<NetworkMessageDescription,Stream> open,NetworkMessageDescription description) {
+        private readonly ThreadLocal<Stream> _stream = new ThreadLocal<Stream>();
+
+        public SimpleThreadLocalStream(Func<NetworkMessageDescription, Stream> open,
+            NetworkMessageDescription description) {
             _open = open;
             Description = description;
-
         }
 
         public NetworkMessageDescription Description { get; }
 
 
         public IDisposable BeginReadScope() {
-            _stream.Value = _open(this.Description);
+            _stream.Value = _open(Description);
             return _stream.Value;
         }
 

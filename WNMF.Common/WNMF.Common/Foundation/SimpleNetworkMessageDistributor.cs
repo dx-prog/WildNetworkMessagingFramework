@@ -4,6 +4,7 @@
  *       2) See License file (https://raw.githubusercontent.com/dx-prog/WildNetworkMessagingFramework/master/LICENSE) for more details 
  *       3) Copyright (c) 2017 David Garcia
  * ************************************************************/
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,24 +17,28 @@ namespace WNMF.Common.Foundation {
         private readonly INetworkMessageHandler _handler;
         private readonly INetworkMessageHistory _historyLog;
 
+
         public SimpleNetworkMessageDistributor(
+            string name,
             INetworkEndpointsManager endpoints,
             INetworkMessageHandler handler,
             INetworkMessageHistory historyLog) {
+            AgentName = name;
             _endpoints = endpoints;
             _handler = handler;
             _historyLog = historyLog;
 
             // ReSharper disable once VirtualMemberCallInConstructor
-            RegisterService(_endpoints).
-            RegisterService(handler).
-            RegisterService(historyLog);
+            RegisterService(_endpoints).RegisterService(handler).RegisterService(historyLog);
         }
 
+        public string AgentName { get; }
+
         public bool Stage(INetworkMessageStream src, out List<TryOperationResponseBase> responses) {
-            responses=new List<TryOperationResponseBase>();
+            responses = new List<TryOperationResponseBase>();
             if (false == _handler.IsSupportedMessageType(src.Description.MessageType)) {
-                responses.Add(new TryOperationResponseBase(LocalizationKeys.NetworkMessageHandler.UnsupportedMessageType));
+                responses.Add(
+                    new TryOperationResponseBase(LocalizationKeys.NetworkMessageHandler.UnsupportedMessageType));
                 return false;
             }
 
@@ -82,7 +87,8 @@ namespace WNMF.Common.Foundation {
                                 );
                                 responses.Add(responseCod);
                                 if (sendSuccess) {
-                                    var markSentSuccess = _historyLog.TryMarkAsSent(endpoint,
+                                    var markSentSuccess = _historyLog.TryMarkAsSent(AgentName,
+                                        endpoint,
                                         message,
                                         out var markSentResult);
                                     responses.Add(markSentResult);
@@ -121,7 +127,8 @@ namespace WNMF.Common.Foundation {
             return endPointsData.Any(x => {
                 // the history object should never fail
                 // unless its backing store is down i.e. drive is out or server is down
-                if (!_historyLog.TryCheckIfSent(x,
+                if (!_historyLog.TryCheckIfSent(AgentName,
+                    x,
                     networkMessageDescription,
                     out var reason))
                     throw LocalizationKeys.ExceptionMessages.ObjectNotInExpectedState.GetException();

@@ -4,6 +4,7 @@
  *       2) See License file (https://raw.githubusercontent.com/dx-prog/WildNetworkMessagingFramework/master/LICENSE) for more details 
  *       3) Copyright (c) 2017 David Garcia
  * ************************************************************/
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -117,7 +118,8 @@ namespace WNMF.Common.Foundation {
             return true;
         }
 
-        public bool TryStageMessage(INetworkMessageStream source, out TryOperationResponse<NetworkMessageDescription> messageId) {
+        public bool TryStageMessage(INetworkMessageStream source,
+            out TryOperationResponse<NetworkMessageDescription> messageId) {
             var fileName = FileEndPoint.GetRandomFileName();
             var filePath = Path.Combine(_fileDrop, fileName);
             try {
@@ -127,11 +129,14 @@ namespace WNMF.Common.Foundation {
                 }
                 MarkFileAsComplete(source, filePath);
 
-                messageId = new TryOperationResponse<NetworkMessageDescription>(LocalizationKeys.NetworkMessageHandler.Success, CreateMessageDescription(filePath));
+                messageId = new TryOperationResponse<NetworkMessageDescription>(
+                    LocalizationKeys.NetworkMessageHandler.Success,
+                    CreateMessageDescription(filePath));
                 return true;
             }
             catch (Exception ex) {
-                messageId = new TryOperationResponse<NetworkMessageDescription>(ex, LocalizationKeys.NetworkMessageHandler.StaggingFailed);
+                messageId = new TryOperationResponse<NetworkMessageDescription>(ex,
+                    LocalizationKeys.NetworkMessageHandler.StaggingFailed);
                 return false;
             }
         }
@@ -140,16 +145,10 @@ namespace WNMF.Common.Foundation {
             INetworkEndpoint endPoint,
             NetworkMessageDescription queuedMessageId,
             out TryOperationResponse<string> responseCode) {
-
-
-
             try {
-
                 if (TryGetMessageStream(queuedMessageId, out var stream))
-                {
                     return endPoint.TrySend(stream.Data,
                         out responseCode);
-                }
 
                 throw stream.AsException();
             }
@@ -159,24 +158,6 @@ namespace WNMF.Common.Foundation {
                     LocalizationKeys.NetworkMessageHandler.CriticalFailureOnSend);
                 return false;
             }
-        }
-
-        private static NetworkMessageDescription CreateMessageDescription(string filePath) {
-            var fi = new FileInfo(filePath);
-            var desc = new NetworkMessageDescription(fi, File.ReadAllText(filePath + TypeDefinition));
-            return desc;
-        }
-
-        /// <summary>
-        /// Marks a file that is stored in the folder drop as being complete using meta data files
-        /// and file state attributes
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="filePath"></param>
-        private static void MarkFileAsComplete(INetworkMessageStream source, string filePath) {
-            var description = source.Description;
-            // The file message definition is stored in an sibling file
-            MarkFileAsComplete(filePath, description);
         }
 
         public static void MarkFileAsComplete(string filePath, NetworkMessageDescription description) {
@@ -192,6 +173,24 @@ namespace WNMF.Common.Foundation {
             if (fi.IsReadOnly == false)
                 throw new InvalidOperationException((string) LocalizationKeys.ExceptionMessages
                     .ObjectNotInExpectedState);
+        }
+
+        private static NetworkMessageDescription CreateMessageDescription(string filePath) {
+            var fi = new FileInfo(filePath);
+            var desc = new NetworkMessageDescription(fi, File.ReadAllText(filePath + TypeDefinition));
+            return desc;
+        }
+
+        /// <summary>
+        ///     Marks a file that is stored in the folder drop as being complete using meta data files
+        ///     and file state attributes
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="filePath"></param>
+        private static void MarkFileAsComplete(INetworkMessageStream source, string filePath) {
+            var description = source.Description;
+            // The file message definition is stored in an sibling file
+            MarkFileAsComplete(filePath, description);
         }
 
         private static SimpleThreadLocalStream CreateReadStream(FileInfo fi) {

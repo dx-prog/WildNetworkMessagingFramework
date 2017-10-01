@@ -4,6 +4,7 @@
  *       2) See License file (https://raw.githubusercontent.com/dx-prog/WildNetworkMessagingFramework/master/LICENSE) for more details 
  *       3) Copyright (c) 2017 David Garcia
  * ************************************************************/
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -99,11 +100,13 @@ namespace WNMF.Common.Foundation {
                 if (lockTaken) {
                     if (_endPoints.Count == 0) {
                         endPoints =
-                            new TryOperationResponse<INetworkEndpoint[]>(LocalizationKeys.ForNetworkGraphManager.NoEndPoints,
+                            new TryOperationResponse<INetworkEndpoint[]>(
+                                LocalizationKeys.ForNetworkGraphManager.NoEndPoints,
                                 _endPoints.ToArray());
 
                         return false;
                     }
+
                     endPoints =
                         new TryOperationResponse<INetworkEndpoint[]>(LocalizationKeys.ForNetworkGraphManager.Success,
                             _endPoints.ToArray());

@@ -9,6 +9,10 @@ using System.Collections.Generic;
 namespace WNMF.Common.Definition {
     public interface ISimpleNetworkMessageDistributor : INServiceProvider {
         /// <summary>
+        /// Gets the name of the this distributor agent
+        /// </summary>
+        string AgentName { get; }
+        /// <summary>
         /// Puts a message into the staging queue
         /// </summary>
         /// <param name="src"></param>

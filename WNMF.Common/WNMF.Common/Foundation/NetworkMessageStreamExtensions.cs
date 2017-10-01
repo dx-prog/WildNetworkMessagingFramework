@@ -4,6 +4,7 @@
  *       2) See License file (https://raw.githubusercontent.com/dx-prog/WildNetworkMessagingFramework/master/LICENSE) for more details 
  *       3) Copyright (c) 2017 David Garcia
  * ************************************************************/
+
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -16,8 +17,9 @@ namespace WNMF.Common.Foundation {
         ///     Name for a memory block not guaranteed to be zeroed at any given moment
         /// </summary>
         private const string BlockKeyName = "64K";
+
         /// <summary>
-        /// The flyweight is used to make sure we avoid always allocated buffers
+        ///     The flyweight is used to make sure we avoid always allocated buffers
         /// </summary>
         public static readonly FlyWeight<byte[]> BlockBufferFlyWeight = new FlyWeight<byte[]>();
 
