@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Protcols\Http\" />
+    <Folder Include="Protcols\Ftp\" />
+    <Folder Include="Protcols\Msmq\" />
+    <Folder Include="Protcols\Smtp\" />
+    <Folder Include="Protcols\Udp\" />
+    <Folder Include="Protcols\Tcp\" />
+  </ItemGroup>
+
+</Project>
