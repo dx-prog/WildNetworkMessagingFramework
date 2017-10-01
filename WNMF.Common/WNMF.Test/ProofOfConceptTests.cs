@@ -54,22 +54,11 @@ namespace WNMF.Test
 
         [TestMethod]
         public void CanMoveFIles() {
-            var msg = Guid.NewGuid().ToString();
-            var inputFile = Path.Combine(_input.FullName, "file.txt");
-            File.WriteAllText(inputFile, msg);
-            var inputFileInfo = new FileInfo(inputFile);
-            var originalDescription = new NetworkMessageDescription(
-                inputFileInfo,
-                $"File={inputFileInfo.Name};Src={Environment.MachineName};MimeType=text/plain");
-
-            var stagingSuccess=_distro.Stage(new SimpleThreadLocalStream(
-                (d) =>File.OpenRead(inputFile),
-                originalDescription
-            ),
-            out var stageRsults);
-          
-            ReportResults(stageRsults);
-            Assert.IsTrue(stagingSuccess);
+            StageTestFile();
+            StageTestFile();
+            StageTestFile();
+            StageTestFile();
+            StageTestFile();
 
 
             var successRatio =_distro.Pump(out var results);
@@ -80,6 +69,30 @@ namespace WNMF.Test
             ReportResults(results);
 
             Assert.AreEqual(1.0,successRatio);
+        }
+
+        private void StageTestFile() {
+            var inputFile = CreateTestInputFIle(out var originalDescription);
+
+            var stagingSuccess = _distro.Stage(new SimpleThreadLocalStream(
+                    (d) => File.OpenRead(inputFile),
+                    originalDescription
+                ),
+                out var stageRsults);
+
+            ReportResults(stageRsults);
+            Assert.IsTrue(stagingSuccess);
+        }
+
+        private string CreateTestInputFIle(out NetworkMessageDescription originalDescription) {
+            var msg = Guid.NewGuid().ToString();
+            var inputFile = Path.Combine(_input.FullName,DateTime.Now.Ticks+"file.txt");
+            File.WriteAllText(inputFile, msg);
+            var inputFileInfo = new FileInfo(inputFile);
+            originalDescription = new NetworkMessageDescription(
+                inputFileInfo,
+                $"File={inputFileInfo.Name};Src={Environment.MachineName};MimeType=text/plain");
+            return inputFile;
         }
 
         private static void ReportResults(List<TryOperationResponseBase> results) {

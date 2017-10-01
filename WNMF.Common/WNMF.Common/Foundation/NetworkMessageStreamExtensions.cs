@@ -38,6 +38,9 @@ namespace WNMF.Common.Foundation {
                         });
                     block = BlockBufferFlyWeight.GetOrCreate(blockKey, k => new byte[1000 * 64]);
                 }
+               
+                // make write operation is complete
+                worker?.Wait();
             }
         }
     }
