@@ -20,7 +20,7 @@ namespace WNMF.Common.Foundation {
     public class NServiceProvider : INServiceProvider {
         private readonly List<ServiceRegistration> _services = new List<ServiceRegistration>();
 
-        public NServiceProvider() {
+        protected NServiceProvider() {
             // ReSharper disable once VirtualMemberCallInConstructor
             var m = GetType().GetMethod(nameof(RegisterService), BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var interfaceType in GetType().GetInterfaces())

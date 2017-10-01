@@ -7,7 +7,7 @@
 using System;
 
 namespace WNMF.Common.Definition {
-    public interface INetworkMessageHistory {
+    public interface INetworkMessageSendHistory {
         /// <summary>
         /// Mark a message as being sent for a particular endpoint
         /// </summary>

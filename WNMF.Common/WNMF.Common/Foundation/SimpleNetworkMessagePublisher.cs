@@ -15,21 +15,21 @@ namespace WNMF.Common.Foundation {
     public class SimpleNetworkMessagePublisher : NServiceProvider, ISimpleNetworkMessagePublisher {
         private readonly INetworkEndpointsManager _endpoints;
         private readonly INetworkMessageHandler _handler;
-        private readonly INetworkMessageHistory _historyLog;
+        private readonly INetworkMessageSendHistory _sendHistoryLog;
 
 
         public SimpleNetworkMessagePublisher(
             string name,
             INetworkEndpointsManager endpoints,
             INetworkMessageHandler handler,
-            INetworkMessageHistory historyLog) {
+            INetworkMessageSendHistory sendHistoryLog):base() {
             AgentName = name;
             _endpoints = endpoints;
             _handler = handler;
-            _historyLog = historyLog;
+            _sendHistoryLog = sendHistoryLog;
 
             // ReSharper disable once VirtualMemberCallInConstructor
-            RegisterService(_endpoints).RegisterService(handler).RegisterService(historyLog);
+            RegisterService(_endpoints).RegisterService(handler).RegisterService(sendHistoryLog);
         }
 
         public string AgentName { get; }
@@ -75,7 +75,7 @@ namespace WNMF.Common.Foundation {
                 foreach (var message in pendingWork.Data)
                     try {
                         sendTotalCount++;
-                        using (_historyLog.BeginTransaction(out var commit, out var rollback)) {
+                        using (_sendHistoryLog.BeginTransaction(out var commit, out var rollback)) {
                             try {
                                 if (!CheckIfNotSent(message, singleEndPoint))
                                     continue;
@@ -87,7 +87,7 @@ namespace WNMF.Common.Foundation {
                                 );
                                 responses.Add(responseCod);
                                 if (sendSuccess) {
-                                    var markSentSuccess = _historyLog.TryMarkAsSent(AgentName,
+                                    var markSentSuccess = _sendHistoryLog.TryMarkAsSent(AgentName,
                                         endpoint,
                                         message,
                                         out var markSentResult);
@@ -127,7 +127,7 @@ namespace WNMF.Common.Foundation {
             return endPointsData.Any(x => {
                 // the history object should never fail
                 // unless its backing store is down i.e. drive is out or server is down
-                if (!_historyLog.TryCheckIfSent(AgentName,
+                if (!_sendHistoryLog.TryCheckIfSent(AgentName,
                     x,
                     networkMessageDescription,
                     out var reason))

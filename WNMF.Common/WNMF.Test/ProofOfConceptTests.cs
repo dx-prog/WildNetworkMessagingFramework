@@ -21,7 +21,7 @@ namespace WNMF.Test
     [TestClass]
     public class ProofOfConceptTests
     {
-        private SimpleRamHistory _history;
+        private SimpleRamSendHistory _sendHistory;
         private NetworkEndpointsManager _endpoints;
         private FileBasedNetworkMessageHandler _handler;
         private SimpleNetworkMessagePublisher _distro;
@@ -36,12 +36,12 @@ namespace WNMF.Test
             _input = rootdir.CreateSubdirectory("INPUT");
             _dropDir = rootdir.CreateSubdirectory("STAGING");
             _output = rootdir.CreateSubdirectory("OUTPUT");
-            _history = new SimpleRamHistory();
+            _sendHistory = new SimpleRamSendHistory();
             _endpoints = new NetworkEndpointsManager();
             _endpoints.TryAddEndPoint(
                 new FileEndPoint(new Uri(_output.FullName)), out _);
             _handler = new FileBasedNetworkMessageHandler(null, _dropDir.FullName);
-            _distro = new SimpleNetworkMessagePublisher("test",_endpoints, _handler, _history);
+            _distro = new SimpleNetworkMessagePublisher("test",_endpoints, _handler, _sendHistory);
         }
 
         [TestMethod]
@@ -49,8 +49,8 @@ namespace WNMF.Test
             _distro.TryGetService<INetworkEndpointsManager>(out var graphService);
             Assert.AreSame(_endpoints,graphService.Data);
 
-            _distro.TryGetService<INetworkMessageHistory>(out var historyService);
-            Assert.AreSame(_history, historyService.Data);
+            _distro.TryGetService<INetworkMessageSendHistory>(out var historyService);
+            Assert.AreSame(_sendHistory, historyService.Data);
 
             _distro.TryGetService<INetworkMessageHandler>(out var handlerService);
             Assert.AreSame(_handler, handlerService.Data);

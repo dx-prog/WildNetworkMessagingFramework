@@ -16,7 +16,7 @@ namespace WNMF.Common.Foundation {
     /// <summary>
     ///     This only tracks the send history in memory, it could be extended to record its state to the file system
     /// </summary>
-    public class SimpleRamHistory : INetworkMessageHistory {
+    public class SimpleRamSendHistory : INetworkMessageSendHistory {
         private readonly Dictionary<string, DateTime> _sent = new Dictionary<string, DateTime>();
 
         public virtual IDisposable BeginTransaction(out Action commit, out Action rollback) {
