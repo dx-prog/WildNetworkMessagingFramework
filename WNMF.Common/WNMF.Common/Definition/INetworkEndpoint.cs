@@ -7,6 +7,15 @@
 using System;
 
 namespace WNMF.Common.Definition {
+
+    public interface INetworkSubscriberEndpoint : INetworkEndpoint {
+        /// <summary>
+        ///     Attempts to send data to some endpint
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="responseCode">the tracking id of the object sent as reported by the remote; or error information</param>
+        bool TrySend(INetworkMessageStream input, out TryOperationResponse<string> responseCode);
+    }
     /// <summary>
     ///     The Endpoint is only concerned with getting data to some endpoint
     /// </summary>
@@ -35,11 +44,5 @@ namespace WNMF.Common.Definition {
         /// <returns></returns>
         bool TryChange(Uri newEndpoint, out TryOperationResponse<Uri> oldEndpoint);
 
-        /// <summary>
-        ///     Attempts to send data to some endpint
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="responseCode">the tracking id of the object sent as reported by the remote; or error information</param>
-        bool TrySend(INetworkMessageStream input, out TryOperationResponse<string> responseCode);
     }
 }

@@ -45,12 +45,12 @@ namespace WNMF.Common.Foundation {
             return false;
         }
 
-        /// <summary>
-        ///     Try to send from the stream provided to the endpoint
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="responseCode"></param>
-        /// <returns></returns>
-        public abstract bool TrySend(INetworkMessageStream input, out TryOperationResponse<string> responseCode);
+        ///// <summary>
+        /////     Try to send from the stream provided to the endpoint
+        ///// </summary>
+        ///// <param name="input"></param>
+        ///// <param name="responseCode"></param>
+        ///// <returns></returns>
+        //public abstract bool TrySend(INetworkMessageStream input, out TryOperationResponse<string> responseCode);
     }
 }

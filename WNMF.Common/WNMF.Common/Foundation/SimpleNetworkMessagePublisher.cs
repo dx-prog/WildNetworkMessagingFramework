@@ -15,21 +15,21 @@ namespace WNMF.Common.Foundation {
     public class SimpleNetworkMessagePublisher : NServiceProvider, ISimpleNetworkMessagePublisher {
         private readonly INetworkEndpointsManager _endpoints;
         private readonly INetworkMessageHandler _handler;
-        private readonly INetworkMessageSendHistory _sendHistoryLog;
+        private readonly INetworkMessagePublishingHistory _publishingHistoryLog;
 
 
         public SimpleNetworkMessagePublisher(
             string name,
             INetworkEndpointsManager endpoints,
             INetworkMessageHandler handler,
-            INetworkMessageSendHistory sendHistoryLog):base() {
+            INetworkMessagePublishingHistory publishingHistoryLog) {
             AgentName = name;
             _endpoints = endpoints;
             _handler = handler;
-            _sendHistoryLog = sendHistoryLog;
+            _publishingHistoryLog = publishingHistoryLog;
 
             // ReSharper disable once VirtualMemberCallInConstructor
-            RegisterService(_endpoints).RegisterService(handler).RegisterService(sendHistoryLog);
+            RegisterService(_endpoints).RegisterService(handler).RegisterService(publishingHistoryLog);
         }
 
         public string AgentName { get; }
@@ -49,7 +49,7 @@ namespace WNMF.Common.Foundation {
 
         public double Pump(out List<TryOperationResponseBase> responses) {
             responses = new List<TryOperationResponseBase>();
-            var cannotContinue = !_endpoints.TryGetEndPoints(out var endPoints);
+            var cannotContinue = !_endpoints.TryGetEndPoints<INetworkSubscriberEndpoint>(out var endPoints);
             responses.Add(endPoints);
             if (cannotContinue)
                 return 0;
@@ -69,13 +69,14 @@ namespace WNMF.Common.Foundation {
             double sendTotalCount = 0;
             double sendSuccessCount = 0;
 
-            var singleEndPoint = new INetworkEndpoint[1];
+            var singleEndPoint = new INetworkSubscriberEndpoint[1];
             foreach (var endpoint in endPoints.Data) {
                 singleEndPoint[0] = endpoint;
+
                 foreach (var message in pendingWork.Data)
                     try {
                         sendTotalCount++;
-                        using (_sendHistoryLog.BeginTransaction(out var commit, out var rollback)) {
+                        using (_publishingHistoryLog.BeginTransaction(out var commit, out var rollback)) {
                             try {
                                 if (!CheckIfNotSent(message, singleEndPoint))
                                     continue;
@@ -87,7 +88,7 @@ namespace WNMF.Common.Foundation {
                                 );
                                 responses.Add(responseCod);
                                 if (sendSuccess) {
-                                    var markSentSuccess = _sendHistoryLog.TryMarkAsSent(AgentName,
+                                    var markSentSuccess = _publishingHistoryLog.TryMarkAsPublished(AgentName,
                                         endpoint,
                                         message,
                                         out var markSentResult);
@@ -111,7 +112,7 @@ namespace WNMF.Common.Foundation {
                         responses.Add(new TryOperationResponse<
                             Tuple<INetworkEndpoint, NetworkMessageDescription, Exception>>(
                             LocalizationKeys.SpecialOperationalResult.FailureTuple,
-                            Tuple.Create(endpoint, message, ex)
+                            Tuple.Create((INetworkEndpoint) endpoint, message, ex)
                         ));
                     }
             }
@@ -120,14 +121,14 @@ namespace WNMF.Common.Foundation {
         }
 
         protected virtual bool CheckIfNotSent(NetworkMessageDescription networkMessageDescription,
-            INetworkEndpoint[] endPointsData) {
+            INetworkSubscriberEndpoint[] endPointsData) {
             if (endPointsData == null || endPointsData.Length == 0)
                 throw LocalizationKeys.ExceptionMessages.ObjectNotInExpectedState.GetException();
 
             return endPointsData.Any(x => {
                 // the history object should never fail
                 // unless its backing store is down i.e. drive is out or server is down
-                if (!_sendHistoryLog.TryCheckIfSent(AgentName,
+                if (!_publishingHistoryLog.TryCheckIfPublished(AgentName,
                     x,
                     networkMessageDescription,
                     out var reason))

@@ -93,29 +93,29 @@ namespace WNMF.Common.Foundation {
             }
         }
 
-        public bool TryGetEndPoints(out TryOperationResponse<INetworkEndpoint[]> endPoints) {
+        public bool TryGetEndPoints<T>(out TryOperationResponse<T[]> endPoints) where T : INetworkEndpoint {
             var lockTaken = false;
             try {
                 Monitor.TryEnter(_endPoints, 100, ref lockTaken);
                 if (lockTaken) {
                     if (_endPoints.Count == 0) {
                         endPoints =
-                            new TryOperationResponse<INetworkEndpoint[]>(
+                            new TryOperationResponse<T[]>(
                                 LocalizationKeys.ForNetworkGraphManager.NoEndPoints,
-                                _endPoints.ToArray());
+                                _endPoints.OfType<T>().ToArray());
 
                         return false;
                     }
 
                     endPoints =
-                        new TryOperationResponse<INetworkEndpoint[]>(LocalizationKeys.ForNetworkGraphManager.Success,
-                            _endPoints.ToArray());
+                        new TryOperationResponse<T[]>(LocalizationKeys.ForNetworkGraphManager.Success,
+                            _endPoints.OfType<T>().ToArray());
 
                     return true;
                 }
                 else {
                     endPoints =
-                        new TryOperationResponse<INetworkEndpoint[]>(
+                        new TryOperationResponse<T[]>(
                             LocalizationKeys.ForNetworkGraphManager.TimeOutOnWait,
                             null);
                     return false;

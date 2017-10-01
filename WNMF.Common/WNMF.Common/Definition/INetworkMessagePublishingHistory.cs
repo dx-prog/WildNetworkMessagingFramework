@@ -7,7 +7,7 @@
 using System;
 
 namespace WNMF.Common.Definition {
-    public interface INetworkMessageSendHistory {
+    public interface INetworkMessagePublishingHistory {
         /// <summary>
         /// Mark a message as being sent for a particular endpoint
         /// </summary>
@@ -16,7 +16,7 @@ namespace WNMF.Common.Definition {
         /// <param name="messageDescription"></param>
         /// <param name="reason">data is true if the message is marked</param>
         /// <returns>false if there is was a critical failure</returns>
-        bool TryMarkAsSent(string distroAgentId, INetworkEndpoint endpoint,NetworkMessageDescription messageDescription, out TryOperationResponse<bool> reason);
+        bool TryMarkAsPublished(string distroAgentId, INetworkSubscriberEndpoint endpoint,NetworkMessageDescription messageDescription, out TryOperationResponse<bool> reason);
         /// <summary>
         /// Check if an endpoint had previously sent a message
         /// </summary>
@@ -25,7 +25,7 @@ namespace WNMF.Common.Definition {
         /// <param name="messageDescription"></param>
         /// <param name="reason">data is same as returned value</param>
         /// <returns></returns>
-        bool TryCheckIfSent(string distroAgentId, INetworkEndpoint endpoint, NetworkMessageDescription messageDescription, out TryOperationResponse<bool> reason);
+        bool TryCheckIfPublished(string distroAgentId, INetworkSubscriberEndpoint endpoint, NetworkMessageDescription messageDescription, out TryOperationResponse<bool> reason);
 
         /// <summary>
         /// Begin whatever transaction or syncronization operation required

@@ -142,7 +142,7 @@ namespace WNMF.Common.Foundation {
         }
 
         public bool TryDispatchMessage(
-            INetworkEndpoint endPoint,
+            INetworkSubscriberEndpoint endPoint,
             NetworkMessageDescription queuedMessageId,
             out TryOperationResponse<string> responseCode) {
             try {

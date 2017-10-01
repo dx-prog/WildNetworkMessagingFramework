@@ -27,6 +27,6 @@ namespace WNMF.Common.Definition {
         ///     Try to get the currently known endpoints
         /// </summary>
         /// <returns></returns>
-        bool TryGetEndPoints(out TryOperationResponse<INetworkEndpoint[]> endPoints);
+        bool TryGetEndPoints<T>(out TryOperationResponse<T[]> endPoints) where T :INetworkEndpoint;
     }
 }

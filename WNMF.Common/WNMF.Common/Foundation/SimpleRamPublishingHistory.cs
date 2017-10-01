@@ -16,7 +16,7 @@ namespace WNMF.Common.Foundation {
     /// <summary>
     ///     This only tracks the send history in memory, it could be extended to record its state to the file system
     /// </summary>
-    public class SimpleRamSendHistory : INetworkMessageSendHistory {
+    public class SimpleRamPublishingHistory : INetworkMessagePublishingHistory {
         private readonly Dictionary<string, DateTime> _sent = new Dictionary<string, DateTime>();
 
         public virtual IDisposable BeginTransaction(out Action commit, out Action rollback) {
@@ -35,9 +35,9 @@ namespace WNMF.Common.Foundation {
             return new MonitorLock(_sent);
         }
 
-        public virtual bool TryMarkAsSent(
+        public virtual bool TryMarkAsPublished(
             string distroAgentId,
-            INetworkEndpoint endpoint,
+            INetworkSubscriberEndpoint endpoint,
             NetworkMessageDescription messageDescription,
             out TryOperationResponse<bool> reason) {
             lock (_sent) {
@@ -60,9 +60,9 @@ namespace WNMF.Common.Foundation {
             }
         }
 
-        public virtual bool TryCheckIfSent(
+        public virtual bool TryCheckIfPublished(
             string distroAgentId,
-            INetworkEndpoint endpoint,
+            INetworkSubscriberEndpoint endpoint,
             NetworkMessageDescription messageDescription,
             out TryOperationResponse<bool> reason) {
             lock (_sent) {

@@ -50,7 +50,7 @@ namespace WNMF.Common.Definition {
         /// <param name="queuedMessageId">The message Id</param>
         /// <param name="responseCode">If failure, the error code to look up, if success, the remote object id</param>
         /// <returns></returns>
-        bool TryDispatchMessage(INetworkEndpoint endPoint,
+        bool TryDispatchMessage(INetworkSubscriberEndpoint endPoint,
             NetworkMessageDescription queuedMessageId,
             out TryOperationResponse<string> responseCode);
     }
