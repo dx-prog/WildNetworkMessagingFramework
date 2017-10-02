@@ -18,8 +18,6 @@ namespace WNMF.Common.Foundation {
     ///     This is a Network message handler that uses the local file system for caching
     /// </summary>
     public class FileBasedNetworkMessageHandler : NServiceProvider, INetworkMessageHandler {
-        private const string TypeDefinition = ".TYPE";
-        private const string IgnoreDefinition = ".IGNORE";
         private readonly Func<string, bool> _canHandle;
         private readonly string _fileDrop;
 
@@ -42,24 +40,11 @@ namespace WNMF.Common.Foundation {
                 // NOTE: DO NOT CONVERT TO EXPRESSION
                 // ReSharper disable once LoopCanBeConvertedToQuery
                 foreach (var filePath in Directory.EnumerateFiles(_fileDrop, "*")) {
-                    var extension = Path.GetExtension(filePath).ToUpperInvariant();
-                    switch (extension) {
-                        case IgnoreDefinition:
-                            continue;
-                        case TypeDefinition:
-                            continue;
-                    }
-
-                    // a File can be marked as ignored
-                    if (File.Exists(filePath + IgnoreDefinition))
-                        continue;
-                    // Files without a type definition are automatically ignored
-                    if (!File.Exists(filePath + TypeDefinition))
+                    if (!FileEndPointBase.TryGetDescription(filePath, out var description))
                         continue;
 
-                    var desc = CreateMessageDescription(filePath);
-                    if (callback(desc))
-                        descriptions.Add(desc);
+                    if (callback(description.Data))
+                        descriptions.Add(description.Data);
                 }
 
                 messages = new TryOperationResponse<NetworkMessageDescription[]>(
@@ -120,19 +105,16 @@ namespace WNMF.Common.Foundation {
 
         public bool TryStageMessage(INetworkMessageStream source,
             out TryOperationResponse<NetworkMessageDescription> messageId) {
-            var fileName = FileEndPoint.GetRandomFileName();
+            var fileName = FileEndPointBase.GetRandomFileName();
             var filePath = Path.Combine(_fileDrop, fileName);
             try {
                 using (var fs = File.Open(filePath, FileMode.CreateNew, FileAccess.Write, FileShare.None)) {
                     source.ChunkTo(fs);
                     fs.Flush();
                 }
-                MarkFileAsComplete(source, filePath);
 
-                messageId = new TryOperationResponse<NetworkMessageDescription>(
-                    LocalizationKeys.NetworkMessageHandler.Success,
-                    CreateMessageDescription(filePath));
-                return true;
+                MarkFileAsComplete(source, filePath);
+                return FileEndPointBase.TryGetDescription(filePath, out messageId);
             }
             catch (Exception ex) {
                 messageId = new TryOperationResponse<NetworkMessageDescription>(ex,
@@ -161,10 +143,10 @@ namespace WNMF.Common.Foundation {
         }
 
         public static void MarkFileAsComplete(string filePath, NetworkMessageDescription description) {
-            File.WriteAllText(filePath + TypeDefinition, description.MessageType);
+            File.WriteAllText(filePath + FileEndPointBase.TypeDefinition, description.MessageType);
 
             // Message Type must be made readonly in order to be ready
-            var fi = new FileInfo(filePath + TypeDefinition) {IsReadOnly = true};
+            var fi = new FileInfo(filePath + FileEndPointBase.TypeDefinition) {IsReadOnly = true};
             fi.Refresh();
             // Destination File must be made readonly in order to be ready
             fi = new FileInfo(filePath) {IsReadOnly = true};
@@ -173,12 +155,6 @@ namespace WNMF.Common.Foundation {
             if (fi.IsReadOnly == false)
                 throw new InvalidOperationException((string) LocalizationKeys.ExceptionMessages
                     .ObjectNotInExpectedState);
-        }
-
-        private static NetworkMessageDescription CreateMessageDescription(string filePath) {
-            var fi = new FileInfo(filePath);
-            var desc = new NetworkMessageDescription(fi, File.ReadAllText(filePath + TypeDefinition));
-            return desc;
         }
 
         /// <summary>
@@ -195,7 +171,7 @@ namespace WNMF.Common.Foundation {
 
         private static SimpleThreadLocalStream CreateReadStream(FileInfo fi) {
             return new SimpleThreadLocalStream(d => fi.Open(FileMode.Open, FileAccess.Read, FileShare.Read),
-                new NetworkMessageDescription(fi, File.ReadAllText(fi.FullName + TypeDefinition)));
+                new NetworkMessageDescription(fi, File.ReadAllText(fi.FullName + FileEndPointBase.TypeDefinition)));
         }
     }
 }

@@ -4,6 +4,7 @@
  *       2) See License file (https://raw.githubusercontent.com/dx-prog/WildNetworkMessagingFramework/master/LICENSE) for more details 
  *       3) Copyright (c) 2017 David Garcia
  * ************************************************************/
+
 using System;
 using System.Linq.Expressions;
 
@@ -41,7 +42,8 @@ namespace WNMF.Common.Definition {
         /// <param name="source">The source data stream</param>
         /// <param name="messageId">the ID of the message in the queue or the error code</param>
         /// <returns>true if the message was queued, false if there was an error</returns>
-        bool TryStageMessage(INetworkMessageStream source, out TryOperationResponse<NetworkMessageDescription> messageId);
+        bool TryStageMessage(INetworkMessageStream source,
+            out TryOperationResponse<NetworkMessageDescription> messageId);
 
         /// <summary>
         ///     Tries to move a particular message out of the staging queue into the network

@@ -4,6 +4,7 @@
  *       2) See License file (https://raw.githubusercontent.com/dx-prog/WildNetworkMessagingFramework/master/LICENSE) for more details 
  *       3) Copyright (c) 2017 David Garcia
  * ************************************************************/
+
 using System;
 using System.IO;
 
@@ -18,7 +19,7 @@ namespace WNMF.Common.Definition {
         public NetworkMessageDescription(FileInfo fi, string messageType) {
             Id = fi.Name;
             IsReady = fi.Exists && fi.IsReadOnly;
-      
+
             MessageType = messageType;
             if (!fi.Exists)
                 return;

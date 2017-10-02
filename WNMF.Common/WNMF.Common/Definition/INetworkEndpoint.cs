@@ -4,25 +4,16 @@
  *       2) See License file (https://raw.githubusercontent.com/dx-prog/WildNetworkMessagingFramework/master/LICENSE) for more details 
  *       3) Copyright (c) 2017 David Garcia
  * ************************************************************/
+
 using System;
 
 namespace WNMF.Common.Definition {
-
-    public interface INetworkSubscriberEndpoint : INetworkEndpoint {
-        /// <summary>
-        ///     Attempts to send data to some endpint
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="responseCode">the tracking id of the object sent as reported by the remote; or error information</param>
-        bool TrySend(INetworkMessageStream input, out TryOperationResponse<string> responseCode);
-    }
     /// <summary>
     ///     The Endpoint is only concerned with getting data to some endpoint
     /// </summary>
     public interface INetworkEndpoint : INServiceProvider {
-
         /// <summary>
-        /// All end points should have a unique ID
+        ///     All end points should have a unique ID
         /// </summary>
         string GlobalId { get; }
 
@@ -43,6 +34,5 @@ namespace WNMF.Common.Definition {
         /// <param name="oldEndpoint"></param>
         /// <returns></returns>
         bool TryChange(Uri newEndpoint, out TryOperationResponse<Uri> oldEndpoint);
-
     }
 }

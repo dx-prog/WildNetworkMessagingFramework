@@ -13,8 +13,9 @@ using WNMF.Common.Definition;
 using WNMF.Common.Foundation;
 
 namespace WNMF.Common.Protcols.File {
-    public class FileEndPoint : NetworkEndPointBase, INetworkSubscriberEndpoint {
-        public FileEndPoint(Uri uri) : base(uri) {
+    public class OutboundFileEndPoint : FileEndPointBase,
+        INetworkSubscriberEndpoint {
+        public OutboundFileEndPoint(Uri uri) : base(uri) {
         }
 
         public bool CreateDirectory { get; set; } = true;
@@ -58,10 +59,6 @@ namespace WNMF.Common.Protcols.File {
                     new TryOperationResponse<string>(ex, LocalizationKeys.ForGeneralPurposes.SendFailed);
                 return false;
             }
-        }
-
-        public static string GetRandomFileName() {
-            return Path.GetRandomFileName().Replace(".", "") + "." + DateTime.Now.Ticks + ".dat";
         }
     }
 }

@@ -4,23 +4,20 @@
  *       2) See License file (https://raw.githubusercontent.com/dx-prog/WildNetworkMessagingFramework/master/LICENSE) for more details 
  *       3) Copyright (c) 2017 David Garcia
  * ************************************************************/
+
 using System;
 using WNMF.Common.Culture;
 
 namespace WNMF.Common.Definition {
     public sealed class TryOperationResponse<T> : TryOperationResponseBase {
-        private readonly T _data;
-
-
         public TryOperationResponse(Exception error, LocalizationKeys.LocalizationKey customMessageType) :
             base(error, customMessageType) {
-            _data = default;
+            DataUnchecked = default;
         }
 
         public TryOperationResponse(LocalizationKeys.LocalizationKey messageType, T data) :
             base(messageType) {
-            _data = data;
-        
+            DataUnchecked = data;
         }
 
         public TryOperationResponse(string informationText, T data) : base(
@@ -28,17 +25,17 @@ namespace WNMF.Common.Definition {
             informationText,
             null
         ) {
-            _data = data;
+            DataUnchecked = data;
         }
 
 
         /// <summary>
         ///     Get the data associated with a response; this will not check if there is an exception
         /// </summary>
-        public T DataUnchecked => _data;
+        public T DataUnchecked { get; }
 
         /// <summary>
-        ///     Get the data associated with a response, will throw exception if there is an 
+        ///     Get the data associated with a response, will throw exception if there is an
         ///     exception associated with this response
         /// </summary>
         public T Data {
@@ -55,8 +52,8 @@ namespace WNMF.Common.Definition {
             var ax = MessageType != null ? MessageType.GetHashCode() : 0;
             if (Exception != null)
                 return (ax << 7) | Exception.GetHashCode();
-            if (_data != null)
-                return (ax << 7) | _data.GetHashCode();
+            if (DataUnchecked != null)
+                return (ax << 7) | DataUnchecked.GetHashCode();
 
             return ax;
         }

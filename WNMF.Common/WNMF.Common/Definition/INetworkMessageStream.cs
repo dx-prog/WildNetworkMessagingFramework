@@ -4,16 +4,15 @@
  *       2) See License file (https://raw.githubusercontent.com/dx-prog/WildNetworkMessagingFramework/master/LICENSE) for more details 
  *       3) Copyright (c) 2017 David Garcia
  * ************************************************************/
+
 using System;
 
 namespace WNMF.Common.Definition {
     public interface INetworkMessageStream {
-
-
         NetworkMessageDescription Description { get; }
 
         /// <summary>
-        /// Will be used during the read scope
+        ///     Will be used during the read scope
         /// </summary>
         /// <returns></returns>
         IDisposable BeginReadScope();

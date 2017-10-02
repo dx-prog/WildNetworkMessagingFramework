@@ -4,6 +4,7 @@
  *       2) See License file (https://raw.githubusercontent.com/dx-prog/WildNetworkMessagingFramework/master/LICENSE) for more details 
  *       3) Copyright (c) 2017 David Garcia
  * ************************************************************/
+
 namespace WNMF.Common.Definition {
     /// <summary>
     ///     Provides a way for manipulationg a network graph
@@ -27,6 +28,6 @@ namespace WNMF.Common.Definition {
         ///     Try to get the currently known endpoints
         /// </summary>
         /// <returns></returns>
-        bool TryGetEndPoints<T>(out TryOperationResponse<T[]> endPoints) where T :INetworkEndpoint;
+        bool TryGetEndPoints<T>(out TryOperationResponse<T[]> endPoints) where T : INetworkEndpoint;
     }
 }

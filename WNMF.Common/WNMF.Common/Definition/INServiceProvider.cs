@@ -5,27 +5,9 @@
  *       3) Copyright (c) 2017 David Garcia
  * ************************************************************/
 
-using System;
 using System.Runtime.ConstrainedExecution;
 
 namespace WNMF.Common.Definition {
-    public class ServiceRegistration {
-        public ServiceRegistration(
-            string name,
-            Predicate<Type> typeCheck,
-            object instance) {
-            Name = name;
-            TypeCheck = typeCheck;
-            Instance = instance;
-        }
-
-        public object Instance { get; }
-
-        public Predicate<Type> TypeCheck { get; }
-
-        public string Name { get; }
-    }
-
     /// <summary>
     ///     Normal Service Provider
     /// </summary>
@@ -38,10 +20,10 @@ namespace WNMF.Common.Definition {
         /// <param name="name">the name or id of the service if required</param>
         /// <returns></returns>
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        bool TryGetService<T>(out TryOperationResponse<T> service, string name=null);
+        bool TryGetService<T>(out TryOperationResponse<T> service, string name = null);
 
         /// <summary>
-        /// Get all services
+        ///     Get all services
         /// </summary>
         /// <returns></returns>
         bool TryGetServices(out TryOperationResponse<ServiceRegistration[]> response);

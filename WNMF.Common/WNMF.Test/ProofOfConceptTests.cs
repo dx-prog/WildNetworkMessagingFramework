@@ -39,7 +39,7 @@ namespace WNMF.Test
             _publishingHistory = new SimpleRamPublishingHistory();
             _endpoints = new NetworkEndpointsManager();
             _endpoints.TryAddEndPoint(
-                new FileEndPoint(new Uri(_output.FullName)), out _);
+                new OutboundFileEndPoint(new Uri(_output.FullName)), out _);
             _handler = new FileBasedNetworkMessageHandler(null, _dropDir.FullName);
             _distro = new SimpleNetworkMessagePublisher("test",_endpoints, _handler, _publishingHistory);
         }
