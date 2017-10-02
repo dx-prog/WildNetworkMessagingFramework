@@ -4,6 +4,13 @@
 ## Description
 A framework to orchestrate the transmission of data across various end points, configurable through IoC.
 
+## Use Cases
+* Distributed Chat
+* Distributed Search
+* Cloud Sync
+* Network Deployment
+* Content Delivery Network
+
 
 ## Project Vision
 
