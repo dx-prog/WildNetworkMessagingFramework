@@ -10,6 +10,8 @@ A framework to orchestrate the transmission of data across various end points, c
 * Cloud Sync
 * Network Deployment
 * Content Delivery Network
+* Orchestrated Data Transforms
+* Other systems that need data propagation 
 
 
 ## Project Vision
